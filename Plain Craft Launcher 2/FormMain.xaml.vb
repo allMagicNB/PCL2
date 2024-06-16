@@ -281,7 +281,7 @@ Public Class FormMain
     ''' </summary>
     Public Shared IsLinkRestart As Boolean = False
 
-    Private Declare Lib "shell32"
+    Private Declare Sub New Lib "shell32"
 
     Public Sub New()
         ApplicationStartTick = GetTimeTick()
