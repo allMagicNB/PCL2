@@ -280,6 +280,9 @@ Public Class FormMain
     ''' 是否为联机提权后自动重启。
     ''' </summary>
     Public Shared IsLinkRestart As Boolean = False
+
+    Private Declare Lib "shell32"
+
     Public Sub New()
         ApplicationStartTick = GetTimeTick()
         '窗体参数初始化
@@ -307,9 +310,9 @@ Public Class FormMain
         ''开启管理员权限下的文件拖拽，但下列代码也没用（#2531）
         If IsAdmin() Then
             Log("[Start] PCL 正以管理员权限运行")
-            ChangeWindowMessageFilter(&H233, 1)
-            ChangeWindowMessageFilter(&H4A, 1)
-            ChangeWindowMessageFilter(&H49, 1)
+            ChangeWindowMessageFilter(563, 1)
+            ChangeWindowMessageFilter(74, 1)
+            ChangeWindowMessageFilter(73, 1)
             DragAcceptFiles(Handle, 1)
         End If
         '切换到首页
