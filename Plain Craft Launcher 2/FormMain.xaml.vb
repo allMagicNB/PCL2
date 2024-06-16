@@ -281,7 +281,7 @@ Public Class FormMain
     ''' </summary>
     Public Shared IsLinkRestart As Boolean = False
 
-    Private Declare Sub DragAcceptFiles Lib "shell32" (ByVal hwnd As IntPtr, ByVal fAccept As Boolean) As Boolean
+    Private Declare Sub DragAcceptFiles Lib "shell32.dll" (ByVal hwnd As IntPtr, ByVal fAccept As Boolean)
     Private Declare Function ChangeWindowMessageFilter Lib "user32" (ByVal msg As UInteger, ByVal dwFlag As UInteger) As Boolean
 
     Public Sub New()
