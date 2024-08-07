@@ -399,7 +399,6 @@ EndHint:
     Public FrmDownloadMod As PageDownloadMod
     Public FrmDownloadPack As PageDownloadPack
     Public FrmDownloadResourcePack As PageDownloadResourcePack
-    Public FrmDownloadShader As PageDownloadShader
 
     '设置页面声明
     Public FrmSetupLeft As PageSetupLeft
