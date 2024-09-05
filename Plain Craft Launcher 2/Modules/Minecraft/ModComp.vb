@@ -435,7 +435,6 @@
                             Case "tweaks" : Tags.Add("优化")
                             Case "utility" : Tags.Add("实用")
                             Case "vanilla-like" : Tags.Add("类原生")
-
                         End Select
                     Next
                     If Not Tags.Any() Then Tags.Add("杂项")
