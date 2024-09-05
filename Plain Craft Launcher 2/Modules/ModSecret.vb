@@ -113,7 +113,6 @@ Friend Module ModSecret
             Client.Headers("User-Agent") = "PCL2/" & VersionStandardCode
         End If
         Client.Headers("Referer") = "http://" & VersionCode & ".pcl2.open.server/"
-        '如果你有 CurseForge API Key，可以添加到下面，以恢复对 CurseForge 的访问
         Client.Headers("x-api-key") = CurseForgeAPIKey
     End Sub
     ''' <summary>
@@ -128,7 +127,6 @@ Friend Module ModSecret
             Request.UserAgent = "PCL2/" & VersionStandardCode
         End If
         Request.Referer = "http://" & VersionCode & ".pcl2.open.server/"
-        '如果你有 CurseForge API Key，可以添加到下面，以恢复对 CurseForge 的访问
         Request.Headers("x-api-key") = CurseForgeAPIKey
     End Sub
 
