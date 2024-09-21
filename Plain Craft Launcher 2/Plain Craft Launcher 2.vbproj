@@ -290,6 +290,9 @@
     <Compile Include="Pages\PageLink\PageLinkLeft.xaml.vb">
       <DependentUpon>PageLinkLeft.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\PageVersion\PageVersionExport.xaml.vb">
+      <DependentUpon>PageVersionExport.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\PageVersion\PageVersionLeft.xaml.vb">
       <DependentUpon>PageVersionLeft.xaml</DependentUpon>
     </Compile>
@@ -476,6 +479,7 @@
       <DependentUpon>MyRadioButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="FormMain.xaml.vb">
+
       <DependentUpon>FormMain.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -565,6 +569,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\PageLink\PageLinkLeft.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\PageVersion\PageVersionExport.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -937,6 +945,7 @@
     <Resource Include="Images\Icons\Disabled.png" />
     <Resource Include="Images\Icons\Unavaliable.png" />
   </ItemGroup>
+
   <ItemGroup>
     <Resource Include="Images\Heads\MCBBS.png" />
   </ItemGroup>
