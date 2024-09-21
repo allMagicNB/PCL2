@@ -272,20 +272,29 @@ Friend Module ModSecret
     Public IsUpdateStarted As Boolean = False
     Public IsUpdateWaitingRestart As Boolean = False
     Public Sub UpdateCheckByButton()
-        Dim Download As New NetFile({"https://github.com/allMagicNB/PCL2/releases/latest/download/Plain.Craft.Launcher.2.exe"}, Path & "PCL\Plain Craft Launcher 2.exe")
-        Dim Loaders As New List(Of LoaderBase) From {New LoaderDownload("下载启动器更新", New List(Of NetFile) From {Download})}
-        Dim Loader As New LoaderCombo(Of String)("启动器更新", Loaders) With {.ProgressWeight = 16}
-        Loader.Start()
-        LoaderTaskbarAdd(Loader)
-        Dim ProcessId As String = Process.GetCurrentProcess().Id
-        Dim PathName As String = """" & AppDomain.CurrentDomain.SetupInformation.ApplicationName & """"
-        Dim FileNotExists As Boolean = True
-        Do While FileNotExists
-            If (IO.File.Exists(Path & "PCL\Plain Craft Launcher 2.exe")) Then
-                FileNotExists = False
-                ShellOnly("""" & Path & "PCL\Plain Craft Launcher 2.exe""", $"--update {ProcessId} {PathName} " & """Plain Craft Launcher 2.exe""" & " True")
+        Hint("正在检查更新……")
+        Dim LatestAction As JObject = GetJson(NetGetCodeByRequestMulty("https: //api.github.com/repos/allMagicNB/PCL2/actions/runs?branch=prs&event=push&status=success&per_page=1", IsJson:=True).ToString)
+        If LatestAction("workflow_runs")(0)("head_sha") <> CommitHash Then
+            If MyMsgBox("发现启动器更新，是否下载？", "更新提示", "确定", "取消") = 1 Then
+                Dim Artifact As JObject = GetJson(NetGetCodeByRequestMulty(LatestAction("artifacts_url"), IsJson:=True))
+                Dim Download As New NetFile({Artifact("artifacts")(0)("archive_download_url")}, Path & "PCL\Update.zip")
+                Dim Loaders As New List(Of LoaderBase) From {New LoaderDownload("下载启动器更新", New List(Of NetFile) From {Download})}
+                Dim Loader As New LoaderCombo(Of String)("启动器更新", Loaders) With {.ProgressWeight = 16}
+                Loader.Start()
+                LoaderTaskbarAdd(Loader)
+                Dim ProcessId As String = Process.GetCurrentProcess().Id
+                Dim PathName As String = """" & AppDomain.CurrentDomain.SetupInformation.ApplicationName & """"
+                Dim FileNotExists As Boolean = True
+                Do While FileNotExists
+                    If (IO.File.Exists(Path & "PCL\Plain Craft Launcher 2.exe")) Then
+                        FileNotExists = False
+                        ShellOnly($"""{Path}PCL\Plain Craft Launcher 2.exe""", $"--update {ProcessId} {PathName} " & """Plain Craft Launcher 2.exe""" & " True")
+                    End If
+                Loop
             End If
-        Loop
+        Else
+            Hint($"启动器已为最新版 {CommitHash}，无需更新啦！")
+        End If
     End Sub
     Public Sub UpdateStart(BaseUrl As String, Slient As Boolean, Optional ReceivedKey As String = Nothing, Optional ForceValidated As Boolean = False)
     End Sub
@@ -295,9 +304,9 @@ Friend Module ModSecret
         ShellOnly("TASKKILL.exe", $"/F /PID {ProcessId}")
         Dim NewDirectoryInfo As New DirectoryInfo(Path)
         Dim OldDirectory As String = NewDirectoryInfo.Parent.ToString
-        CopyFile(Path & NewFileName, OldDirectory & OldFileName)
+        CopyFile(Path & NewFileName, OldDirectory & "\" & OldFileName)
         If TriggerRestart Then
-            ShellOnly(OldDirectory & OldFileName)
+            ShellOnly(OldDirectory & "\" & OldFileName)
         End If
     End Sub
 
