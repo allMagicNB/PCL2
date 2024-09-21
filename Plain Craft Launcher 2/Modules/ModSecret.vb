@@ -283,7 +283,7 @@ Friend Module ModSecret
         Do While FileNotExists
             If (IO.File.Exists(Path & "PCL\Plain Craft Launcher 2.exe")) Then
                 FileNotExists = False
-                ShellOnly("""" & Path & "PCL\Plain Craft Launcher 2.exe""", "--update " & ProcessId & " " & PathName & " " & """Plain Craft Launcher 2.exe""" & " True")
+                ShellOnly("""" & Path & "PCL\Plain Craft Launcher 2.exe""", $"--update {ProcessId} {PathName} " & """Plain Craft Launcher 2.exe""" & " True")
             End If
         Loop
     End Sub
@@ -292,7 +292,7 @@ Friend Module ModSecret
     Public Sub UpdateRestart(TriggerRestartAndByEnd As Boolean)
     End Sub
     Public Sub UpdateReplace(ProcessId As Integer, OldFileName As String, NewFileName As String, TriggerRestart As Boolean)
-        ShellOnly("taskkill.exe", "/f /PID " & ProcessId)
+        ShellOnly("TASKKILL.exe", $"/F /PID {ProcessId}")
         Dim NewDirectoryInfo As New DirectoryInfo(Path)
         Dim OldDirectory As String = NewDirectoryInfo.Parent.ToString
         CopyFile(Path & NewFileName, OldDirectory & OldFileName)
