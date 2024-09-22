@@ -293,7 +293,7 @@ Friend Module ModSecret
                 Loop
             End If
         Else
-            Hint($"启动器已为最新版 {CommitHash}，无需更新啦！")
+            Hint($"启动器已为最新版 {CommitHash}，无需更新啦！", HintType.Finish)
         End If
     End Sub
     Public Sub UpdateStart(BaseUrl As String, Slient As Boolean, Optional ReceivedKey As String = Nothing, Optional ForceValidated As Boolean = False)
