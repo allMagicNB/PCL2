@@ -10,6 +10,19 @@ Public Class FormMain
         Dim FeatureList As New List(Of KeyValuePair(Of Integer, String))
         '统计更新日志条目
 #If BETA Then
+        If LastVersion < 340 Then 'Release 2.8.8
+            If LastVersion = 338 Then FeatureList.Add(New KeyValuePair(Of Integer, String)(1, "修复数个与新正版登录相关的严重 Bug"))
+            FeatureCount += 3
+            BugCount += 7
+        End If
+        If LastVersion < 338 Then 'Release 2.8.7
+            FeatureList.Add(New KeyValuePair(Of Integer, String)(4, "使用新的正版登录方式，以提高安全性"))
+            FeatureList.Add(New KeyValuePair(Of Integer, String)(2, "优化安装整合包、检索 Mod 的稳定性"))
+            FeatureList.Add(New KeyValuePair(Of Integer, String)(1, "修复无法加载部分 Mod 的图标的 Bug"))
+            FeatureList.Add(New KeyValuePair(Of Integer, String)(1, "修复在 Mod 管理页面删除 Mod 导致报错的 Bug"))
+            FeatureCount += 11
+            BugCount += 21
+        End If
         If LastVersion < 336 Then 'Release 2.8.6
             FeatureList.Add(New KeyValuePair(Of Integer, String)(4, "下载 Mod 时会使用 MCIM 国内镜像源"))
             FeatureList.Add(New KeyValuePair(Of Integer, String)(4, "Mod 管理页面允许筛选可更新/启用/禁用的 Mod"))
@@ -134,6 +147,11 @@ Public Class FormMain
         '3：BUG+ IMP* FEAT-
         '2：BUG* IMP-
         '1：BUG-
+        If LastVersion < 339 Then 'Snapshot 2.8.8
+            If LastVersion = 337 Then FeatureList.Add(New KeyValuePair(Of Integer, String)(1, "修复数个与新正版登录相关的严重 Bug"))
+            FeatureCount += 3
+            BugCount += 7
+        End If
         If LastVersion < 337 Then 'Snapshot 2.8.7
             FeatureList.Add(New KeyValuePair(Of Integer, String)(4, "使用新的正版登录方式，以提高安全性"))
             FeatureList.Add(New KeyValuePair(Of Integer, String)(2, "优化安装整合包、检索 Mod 的稳定性"))
@@ -721,7 +739,7 @@ Public Class FormMain
                 Exit Sub
             ElseIf e.Key = Key.Escape Then
                 Dim Msg As Object = PanMsg.Children(0)
-                If TypeOf Msg Is MyMsgText AndAlso Msg.Btn3.Visibility = Visibility.Visible Then
+                If TypeOf Msg IsNot MyMsgInput AndAlso TypeOf Msg IsNot MyMsgSelect AndAlso Msg.Btn3.Visibility = Visibility.Visible Then
                     Msg.Btn3_Click()
                 ElseIf Msg.Btn2.Visibility = Visibility.Visible Then
                     Msg.Btn2_Click()
@@ -885,7 +903,7 @@ Public Class FormMain
             End If
             '多文件拖拽
             If FilePathList.Count > 1 Then
-                '必须要求全部为 jar 文件
+                '必须要求全部为 Jar 文件
                 For Each File In FilePathList
                     If Not {"jar", "litemod", "disabled", "old"}.Contains(File.After(".").ToLower) Then
                         Hint("一次请只拖入一个文件！", HintType.Critical)
@@ -912,7 +930,7 @@ Public Class FormMain
             End If
             'Mod 安装
             If {"jar", "litemod", "disabled", "old"}.Any(Function(t) t = Extension) Then
-                Log("[System] 文件为 jar/litemod 格式，尝试作为 Mod 安装")
+                Log("[System] 文件为 jar / litemod 格式，尝试作为 Mod 安装")
                 '获取并检查目标版本
                 Dim TargetVersion As McVersion = McVersionCurrent
                 If PageCurrent = PageType.VersionSetup Then TargetVersion = PageVersionLeft.Version
@@ -1100,9 +1118,12 @@ Install:
         DownloadForge = 6
         DownloadNeoForge = 7
         DownloadFabric = 8
+        DownloadQuilt = 10
         DownloadLiteLoader = 9
         DownloadMod = 11
         DownloadPack = 12
+        DownloadResourcePack = 13
+        DownloadShader = 14
         SetupLaunch = 0
         SetupUI = 1
         SetupSystem = 2
@@ -1119,6 +1140,11 @@ Install:
         VersionSetup = 1
         VersionMod = 2
         VersionModDisabled = 3
+        VersionExport = 4
+        VersionWorld = 5
+        VersionResourcePack = 6
+        VersionShader = 7
+        VersionScreenshot = 8
     End Enum
     ''' <summary>
     ''' 获取次级页面的名称。若并非次级页面则返回空字符串，故可以以此判断是否为次级页面。
@@ -1138,8 +1164,10 @@ Install:
                         Return "Mod 下载 - " & Project.TranslatedName
                     Case CompType.ModPack
                         Return "整合包下载 - " & Project.TranslatedName
-                    Case Else 'CompType.ResourcePack
+                    Case CompType.ResourcePack
                         Return "资源包下载 - " & Project.TranslatedName
+                    Case Else 'CompType.Shader
+                        Return "光影包下载 - " & Project.TranslatedName
                 End Select
             Case PageType.HelpDetail
                 Dim Entry As HelpEntry = Stack.Additional(0)
