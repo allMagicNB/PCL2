@@ -273,10 +273,10 @@ Friend Module ModSecret
     Public IsUpdateWaitingRestart As Boolean = False
     Public Sub UpdateCheckByButton()
         Hint("正在检查更新……")
-        Dim LatestAction As JObject = GetJson(NetGetCodeByRequestMulty("https://api.github.com/repos/allMagicNB/PCL2/actions/runs?branch=prs&event=push&status=success&per_page=1", IsJson:=True).ToString)
+        Dim LatestAction As JObject = GetJson(NetGetCodeByRequestMultiple("https://api.github.com/repos/allMagicNB/PCL2/actions/runs?branch=prs&event=push&status=success&per_page=1", IsJson:=True).ToString)
         If LatestAction("workflow_runs")(0)("head_sha") <> CommitHash Then
             If MyMsgBox("发现启动器更新，是否下载？", "更新提示", "确定", "取消") = 1 Then
-                Dim Artifact As JObject = GetJson(NetGetCodeByRequestMulty(LatestAction("artifacts_url"), IsJson:=True))
+                Dim Artifact As JObject = GetJson(NetGetCodeByRequestMultiple(LatestAction("artifacts_url"), IsJson:=True))
                 Dim Download As New NetFile({Artifact("artifacts")(0)("archive_download_url")}, Path & "PCL\Update.zip")
                 Dim Loaders As New List(Of LoaderBase) From {New LoaderDownload("下载启动器更新", New List(Of NetFile) From {Download})}
                 Dim Loader As New LoaderCombo(Of String)("启动器更新", Loaders) With {.ProgressWeight = 16}
