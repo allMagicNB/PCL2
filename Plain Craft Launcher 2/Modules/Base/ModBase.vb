@@ -12,14 +12,14 @@ Public Module ModBase
 #Region "声明"
 
     '下列版本信息由更新器自动修改
-    Public Const VersionBaseName As String = "2.8.8" '不含分支前缀的显示用版本名
-    Public Const VersionStandardCode As String = "2.8.8." & VersionBranchCode '标准格式的四段式版本号
+    Public Const VersionBaseName As String = "2.8.9" '不含分支前缀的显示用版本名
+    Public Const VersionStandardCode As String = "2.8.9." & VersionBranchCode '标准格式的四段式版本号
     Public Const CommitHash As String = "" 'Commit Hash，由 GitHub Workflow 自动替换
     Public Const VersionPRSCode As String = "" 'PRS 版本号
 #If BETA Then
     Public Const VersionCode As Integer = 340 'Release
 #Else
-    Public Const VersionCode As Integer = 339 'Snapshot
+    Public Const VersionCode As Integer = 341 'Snapshot
 #End If
     '自动生成的版本信息
     Public Const VersionDisplayName As String = VersionBranchName & " " & VersionBaseName
@@ -185,9 +185,9 @@ Public Module ModBase
         ''' </summary>
         Public Const IconButtonCopy As String = "M394.666667 106.666667h448a74.666667 74.666667 0 0 1 74.666666 74.666666v448a74.666667 74.666667 0 0 1-74.666666 74.666667H394.666667a74.666667 74.666667 0 0 1-74.666667-74.666667V181.333333a74.666667 74.666667 0 0 1 74.666667-74.666666z m0 64a10.666667 10.666667 0 0 0-10.666667 10.666666v448a10.666667 10.666667 0 0 0 10.666667 10.666667h448a10.666667 10.666667 0 0 0 10.666666-10.666667V181.333333a10.666667 10.666667 0 0 0-10.666666-10.666666H394.666667z m245.333333 597.333333a32 32 0 0 1 64 0v74.666667a74.666667 74.666667 0 0 1-74.666667 74.666666H181.333333a74.666667 74.666667 0 0 1-74.666666-74.666666V394.666667a74.666667 74.666667 0 0 1 74.666666-74.666667h74.666667a32 32 0 0 1 0 64h-74.666667a10.666667 10.666667 0 0 0-10.666666 10.666667v448a10.666667 10.666667 0 0 0 10.666666 10.666666h448a10.666667 10.666667 0 0 0 10.666667-10.666666v-74.666667z"
         ''' <summary>
-        ''' 图标，音符，1x
+        ''' 图标，服务端，1x
         ''' </summary>
-        Public Const IconButtonServer As String = "M640 725.333333a42.666667 42.666667 0 1 0 0 85.333334 42.666667 42.666667 0 0 0 0-85.333334z m-256 0H256a42.666667 42.666667 0 0 0 0 85.333334h128a42.666667 42.666667 0 1 0 0-85.333334z m384 0a42.666667 42.666667 0 1 0 0 85.333334 42.666667 42.666667 0 0 0 0-85.333334z m-128-256a42.666667 42.666667 0 1 0 0 85.333334 42.666667 42.666667 0 0 0 0-85.333334z m-256 0H256a42.666667 42.666667 0 1 0 0 85.333334h128a42.666667 42.666667 0 1 0 0-85.333334z m384-256a42.666667 42.666667 0 1 0 0 85.333334 42.666667 42.666667 0 0 0 0-85.333334z m0 256a42.666667 42.666667 0 1 0 0 85.333334 42.666667 42.666667 0 0 0 0-85.333334z m170.666667-256a128 128 0 0 0-128-128H213.333333a128 128 0 0 0-128 128v85.333334a128 128 0 0 0 33.28 85.333333A128 128 0 0 0 85.333333 469.333333v85.333334a128 128 0 0 0 33.28 85.333333A128 128 0 0 0 85.333333 725.333333v85.333334a128 128 0 0 0 128 128h597.333334a128 128 0 0 0 128-128v-85.333334a128 128 0 0 0-33.28-85.333333 128 128 0 0 0 33.28-85.333333v-85.333334a128 128 0 0 0-33.28-85.333333A128 128 0 0 0 938.666667 298.666667V213.333333z m-85.333334 597.333334a42.666667 42.666667 0 0 1-42.666666 42.666666H213.333333a42.666667 42.666667 0 0 1-42.666666-42.666666v-85.333334a42.666667 42.666667 0 0 1 42.666666-42.666666h597.333334a42.666667 42.666667 0 0 1 42.666666 42.666666v85.333334z m0-256a42.666667 42.666667 0 0 1-42.666666 42.666666H213.333333a42.666667 42.666667 0 0 1-42.666666-42.666666v-85.333334a42.666667 42.666667 0 0 1 42.666666-42.666666h597.333334a42.666667 42.666667 0 0 1 42.666666 42.666666v85.333334z m0-256a42.666667 42.666667 0 0 1-42.666666 42.666666H213.333333a42.666667 42.666667 0 0 1-42.666666-42.666666V213.333333a42.666667 42.666667 0 0 1 42.666666-42.666666h597.333334a42.666667 42.666667 0 0 1 42.666666 42.666666v85.333334z m-213.333333-85.333334a42.666667 42.666667 0 1 0 0 85.333334 42.666667 42.666667 0 0 0 0-85.333334zM384 213.333333H256a42.666667 42.666667 0 1 0 0 85.333334h128a42.666667 42.666667 0 1 0 0-85.333334z"
+        Public Const IconButtonServer As String = "M224 160a64 64 0 0 0-64 64v576a64 64 0 0 0 64 64h576a64 64 0 0 0 64-64V224a64 64 0 0 0-64-64H224z m0 384h576v256H224v-256z m192 96v64h320v-64H416z m-128 0v64h64v-64H288zM224 224h576v256H224V224z m192 96v64h320v-64H416z m-128 0v64h64v-64H288z"
         ''' <summary>
         ''' 图标，音符，1x
         ''' </summary>
@@ -1357,8 +1357,8 @@ RetryDir:
 
         '常见错误（记得同时修改下面的）
         Dim CommonReason As String = Nothing
-        If TypeOf InnerEx Is TypeLoadException OrElse TypeOf InnerEx Is MissingMethodException OrElse TypeOf InnerEx Is NotImplementedException OrElse TypeOf InnerEx Is TypeInitializationException Then
-            CommonReason = "PCL 的运行环境存在问题。请尝试重新安装 .NET Framework 4.6.2 然后再试。"
+        If TypeOf InnerEx Is TypeLoadException OrElse TypeOf InnerEx Is BadImageFormatException OrElse TypeOf InnerEx Is MissingMethodException OrElse TypeOf InnerEx Is NotImplementedException OrElse TypeOf InnerEx Is TypeInitializationException Then
+            CommonReason = "PCL 的运行环境存在问题。请尝试重新安装 .NET Framework 4.6.2 然后再试。若无法安装，请先卸载较新版本的 .NET Framework，然后再尝试安装。"
         ElseIf TypeOf InnerEx Is UnauthorizedAccessException Then
             CommonReason = "PCL 的权限不足。请尝试右键 PCL，选择以管理员身份运行。"
         ElseIf TypeOf InnerEx Is OutOfMemoryException Then
@@ -1377,7 +1377,7 @@ RetryDir:
         If CommonReason Is Nothing Then
             Return Desc & Stack & TypeDesc
         Else
-            Dim Result As String = DescList.First & vbCrLf & CommonReason & vbCrLf & "————————————" & vbCrLf
+            Dim Result As String = CommonReason & vbCrLf & DescList.First & vbCrLf & "————————————" & vbCrLf
             DescList(0) = "详细错误信息："
             Return Result & Join(DescList, vbCrLf & "→ ") & Stack & TypeDesc
         End If
@@ -1405,8 +1405,8 @@ RetryDir:
 
         '常见错误（记得同时修改上面的）
         Dim CommonReason As String = Nothing
-        If TypeOf InnerEx Is TypeLoadException OrElse TypeOf InnerEx Is MissingMethodException OrElse TypeOf InnerEx Is NotImplementedException OrElse TypeOf InnerEx Is TypeInitializationException Then
-            CommonReason = "PCL 的运行环境存在问题。请尝试重新安装 .NET Framework 4.6.2 然后再试。"
+        If TypeOf InnerEx Is TypeLoadException OrElse TypeOf InnerEx Is BadImageFormatException OrElse TypeOf InnerEx Is MissingMethodException OrElse TypeOf InnerEx Is NotImplementedException OrElse TypeOf InnerEx Is TypeInitializationException Then
+            CommonReason = "PCL 的运行环境存在问题。请尝试重新安装 .NET Framework 4.6.2 然后再试。若无法安装，请先卸载较新版本的 .NET Framework，然后再尝试安装。"
         ElseIf TypeOf InnerEx Is UnauthorizedAccessException Then
             CommonReason = "PCL 的权限不足。请尝试右键 PCL，选择以管理员身份运行。"
         ElseIf TypeOf InnerEx Is OutOfMemoryException Then
@@ -1420,7 +1420,7 @@ RetryDir:
 
         '构造输出信息
         If CommonReason IsNot Nothing Then
-            Return DescList.First & "：" & CommonReason
+            Return CommonReason & "详细错误：" & DescList.First
         Else
             DescList.Reverse() '让最深层错误在最左边
             Return Join(DescList, " → ")
@@ -1821,10 +1821,10 @@ RetryDir:
         '进行搜索，获取相似信息
         For Each Entry In Entries
             Entry.Similarity = SearchSimilarityWeighted(Entry.SearchSource, Query)
-            Entry.AbsoluteRight = False
-            For Each Pair In Entry.SearchSource
-                If Pair.Key.Replace(" ", "").ContainsF(Query.Replace(" ", ""), True) Then Entry.AbsoluteRight = True
-            Next
+            Entry.AbsoluteRight =
+                Query.Split(" ").All( '对于按空格分割的每一段
+                Function(QueryPart) Entry.SearchSource.Any( '若与任意一个搜索源完全匹配，则标记为完全匹配项
+                Function(Source) Source.Key.Replace(" ", "").ContainsF(QueryPart, True)))
         Next
         '按照相似度进行排序
         Entries = Sort(Entries,
@@ -1854,9 +1854,25 @@ RetryDir:
 #Region "系统"
 
     ''' <summary>
+    ''' 可用于临时存放文件的，不含任何特殊字符的文件夹路径，以“\”结尾。
+    ''' </summary>
+    Public PathPure As String = GetPureASCIIDir()
+    Private Function GetPureASCIIDir() As String
+        If (Path & "PCL").IsASCII() Then
+            Return Path & "PCL\"
+        ElseIf PathAppdata.IsASCII() Then
+            Return PathAppdata
+        ElseIf PathTemp.IsASCII() Then
+            Return PathTemp
+        Else
+            Return OsDrive & "ProgramData\PCL\"
+        End If
+    End Function
+
+    ''' <summary>
     ''' 指示接取到这个异常的函数进行重试。
     ''' </summary>
-    Public Class RetryException
+    Public Class RestartException
         Inherits Exception
     End Class
 
