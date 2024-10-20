@@ -140,7 +140,7 @@ Retry:
     ''' </summary>
     ''' <param name="Url">网页的 Url。</param>
     ''' <param name="Encode">网页的编码，通常为 UTF-8。</param>
-    Public Function NetGetCodeByRequestMulty(Url As String, Optional Encode As Encoding = Nothing, Optional Accept As String = "", Optional IsJson As Boolean = False)
+    Public Function NetGetCodeByRequestMultiple(Url As String, Optional Encode As Encoding = Nothing, Optional Accept As String = "", Optional IsJson As Boolean = False)
         Dim Threads As New List(Of Thread)
         Dim RequestResult = Nothing
         Dim RequestEx As Exception = Nothing
@@ -185,7 +185,7 @@ RequestFinished:
     Public Function NetGetCodeByRequestOnce(Url As String, Optional Encode As Encoding = Nothing, Optional Timeout As Integer = 30000, Optional IsJson As Boolean = False, Optional Accept As String = "", Optional UseBrowserUserAgent As Boolean = False)
         If RunInUi() AndAlso Not Url.Contains("//127.") Then Throw New Exception("在 UI 线程执行了网络请求")
         Url = SecretCdnSign(Url)
-        Log($"[Net] 获取网络结果：{Url}，超时 {Timeout}ms{If(IsJson, "，要求 json", "")}")
+        Log($"[Net] 获取网络结果：{Url}，超时 {Timeout}ms{If(IsJson, "，要求 Json", "")}")
         Dim Request As HttpWebRequest = WebRequest.Create(Url)
         Dim Result As New List(Of Byte)
         Try
@@ -329,7 +329,7 @@ Retry:
     ''' <summary>
     ''' 同时发送多个网络请求并要求返回内容。
     ''' </summary>
-    Public Function NetRequestMulty(Url As String, Method As String, Data As Object, ContentType As String, Optional RequestCount As Integer = 4, Optional Headers As Dictionary(Of String, String) = Nothing, Optional MakeLog As Boolean = True)
+    Public Function NetRequestMultiple(Url As String, Method As String, Data As Object, ContentType As String, Optional RequestCount As Integer = 4, Optional Headers As Dictionary(Of String, String) = Nothing, Optional MakeLog As Boolean = True)
         Dim Threads As New List(Of Thread)
         Dim RequestResult = Nothing
         Dim RequestEx As Exception = Nothing
@@ -701,8 +701,7 @@ RequestFinished:
         ''' <summary>
         ''' 所属的文件列表任务。
         ''' </summary>
-        Public Tasks As New Concurrent.ConcurrentBag(Of LoaderDownload)
-
+        Public Tasks As New SynchronizedCollection(Of LoaderDownload)
         ''' <summary>
         ''' 所有下载源。
         ''' </summary>
@@ -940,7 +939,6 @@ RequestFinished:
                 Dim StartPosition As Long, StartSource As NetSource = Nothing
                 Dim Th As Thread, ThreadInfo As NetThread
                 SyncLock LockChain
-
                     '获取线程起点与下载源
                     '不分割
                     If IsNoSplit Then GoTo Capture
@@ -976,7 +974,7 @@ Capture:
                     Next
                     '是否禁用多线程，以及规定碎片大小
                     Dim TargetUrl As String = GetSource().Url
-                    If TargetUrl.Contains("pcl2-server") OrElse TargetUrl.Contains("gitcode.net") OrElse TargetUrl.Contains("github.com") OrElse TargetUrl.Contains("modrinth") Then Return Nothing
+                    If TargetUrl.Contains("pcl2-server") OrElse TargetUrl.Contains("gitcode") OrElse TargetUrl.Contains("github.com") OrElse TargetUrl.Contains("modrinth") Then Return Nothing
                     '寻找最大碎片
                     'FUTURE: 下载引擎重做，计算下载源平均链接时间和线程下载速度，按最高时间节省来开启多线程
                     Dim FilePieceMax As NetThread = Threads
@@ -1050,6 +1048,15 @@ StartThread:
                     If ModeDebug AndAlso HttpResponse.ResponseUri.OriginalString <> Info.Source.Url Then
                         Log($"[Download] {LocalName} {Info.Uuid}#：重定向至 {HttpResponse.ResponseUri.OriginalString}")
                     End If
+                    ''从响应头获取文件名
+                    'If Info.IsFirstThread Then
+                    '    Dim FileName As String = GetFileNameFromResponse(HttpResponse)
+                    '    If ModeDebug Then Log($"[Download] {LocalName} {Info.Uuid}#：远程文件名：{If(FileName, "未提供")}")
+                    '    If FileName IsNot Nothing AndAlso LocalName = "待定" Then
+                    '        LocalName = FileName
+                    '        Log($"[Download] {LocalName} {Info.Uuid}#：从响应头获取到文件名")
+                    '    End If
+                    'End If
                     '文件大小校验
                     ContentLength = HttpResponse.ContentLength
                     If ContentLength = -1 Then
@@ -1134,7 +1141,7 @@ NotSupportRange:
                                 If NetTaskSpeedLimitHigh > 0 Then NetTaskSpeedLimitLeft -= RealDataCount
                             End SyncLock
                             Dim DeltaTime = GetTimeTick() - Info.LastReceiveTime
-                            If DeltaTime > 1000000 Then DeltaTime = 0 '时间刻反转导致出现极大值
+                            If DeltaTime > 1000000 Then DeltaTime = 1 '时间刻反转导致出现极大值
                             If RealDataCount > 0 Then
                                 '有数据
                                 If Info.DownloadDone = 0 Then
@@ -1175,7 +1182,7 @@ NotSupportRange:
                                     ResultStream.Write(HttpData, 0, RealDataCount)
                                 End If
                                 '检查速度是否过慢
-                                If DeltaTime > 1000 AndAlso DeltaTime > RealDataCount Then '数据包间隔大于 1s，且速度小于 1K/s
+                                If DeltaTime > 1500 AndAlso DeltaTime > RealDataCount Then '数据包间隔大于 1.5s，且速度小于 1.5K/s
                                     Throw New TimeoutException("由于速度过慢断开链接，下载 " & RealDataCount & " B，消耗 " & DeltaTime & " ms。")
                                 End If
                                 Info.LastReceiveTime = GetTimeTick()
@@ -1232,7 +1239,7 @@ SourceBreak:
                 '根据情况判断，是否在多线程下禁用下载源（连续错误过多，或不支持断点续传）
                 If ex.Message.Contains("该下载源不支持") OrElse ex.Message.Contains("未能解析") OrElse ex.Message.Contains("(404)") OrElse
                    ex.Message.Contains("(502)") OrElse ex.Message.Contains("无返回数据") OrElse ex.Message.Contains("空间不足") OrElse ex.Message.Contains("获取到的分段大小不一致") OrElse
-                   ((ex.Message.Contains("(403)") OrElse ex.Message.Contains("(429)")) AndAlso Not Info.Source.Url.ContainsF("bmclapi")) OrElse 'BMCLAPI 的部分源在高频率请求下会返回 403、429，所以不应因此禁用下载源
+                   (ex.Message.Contains("(403)") AndAlso Not Info.Source.Url.ContainsF("bmclapi")) OrElse 'BMCLAPI 的部分源在高频率请求下会返回 403，所以不应因此禁用下载源
                    (Info.Source.FailCount >= MathClamp(NetTaskThreadLimit, 5, 30) AndAlso DownloadDone < 1) OrElse
                     Info.Source.FailCount > NetTaskThreadLimit + 2 Then
                     Dim IsThisFail As Boolean = False
@@ -1287,6 +1294,17 @@ Wrong:
                 If ((FileSize >= 0 AndAlso DownloadDone >= FileSize) OrElse (FileSize = -1 AndAlso DownloadDone > 0)) AndAlso State < NetState.Merge Then Merge()
             End Try
         End Sub
+        ''' <summary>
+        ''' 从 HTTP 响应头中获取文件名。
+        ''' 如果没有，返回 Nothing。
+        ''' </summary>
+        Private Function GetFileNameFromResponse(response As HttpWebResponse) As String
+            Dim header As String = response.Headers("Content-Disposition")
+            If String.IsNullOrEmpty(header) Then Return Nothing
+            'attachment; filename="filename.ext"
+            If Not header.Contains("filename=") Then Return Nothing
+            Return header.After("filename=").Trim(""""c, " "c).Before(";")
+        End Function
 
         '下载文件的最终收束事件
         ''' <summary>
@@ -1403,7 +1421,7 @@ Retry:
         ''' </summary>
         Public Sub Abort(CausedByTask As LoaderDownload)
             '从特定任务中移除，如果它还属于其他任务，则继续下载
-            Tasks.TryTake(CausedByTask)
+            Tasks.Remove(CausedByTask)
             If Tasks.Any Then Exit Sub
             '确认中断
             SyncLock LockState

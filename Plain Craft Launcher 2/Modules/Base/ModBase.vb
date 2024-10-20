@@ -12,14 +12,14 @@ Public Module ModBase
 #Region "声明"
 
     '下列版本信息由更新器自动修改
-    Public Const VersionBaseName As String = "2.8.7" '不含分支前缀的显示用版本名
-    Public Const VersionStandardCode As String = "2.8.7." & VersionBranchCode '标准格式的四段式版本号
+    Public Const VersionBaseName As String = "2.8.9" '不含分支前缀的显示用版本名
+    Public Const VersionStandardCode As String = "2.8.9." & VersionBranchCode '标准格式的四段式版本号
     Public Const CommitHash As String = "" 'Commit Hash，由 GitHub Workflow 自动替换
     Public Const VersionPRSCode As String = "" 'PRS 版本号
 #If BETA Then
-    Public Const VersionCode As Integer = 336 'Release
+    Public Const VersionCode As Integer = 340 'Release
 #Else
-    Public Const VersionCode As Integer = 337 'Snapshot
+    Public Const VersionCode As Integer = 341 'Snapshot
 #End If
     '自动生成的版本信息
     Public Const VersionDisplayName As String = VersionBranchName & " " & VersionBaseName
@@ -176,6 +176,18 @@ Public Module ModBase
         ''' 图标按钮，离线，0.85x
         ''' </summary>
         Public Const IconButtonOffline As String = "M533.293176 788.841412a60.235294 60.235294 0 1 1 85.202824 85.202823l-42.616471 42.586353c-129.355294 129.385412-339.124706 129.385412-468.510117 0-129.385412-129.385412-129.385412-339.124706 0-468.510117l42.586353-42.616471a60.235294 60.235294 0 1 1 85.202823 85.202824l-42.61647 42.586352a210.823529 210.823529 0 1 0 298.164706 298.164706l42.586352-42.61647z m255.548236-255.548236l42.61647-42.586352a210.823529 210.823529 0 1 0-298.164706-298.164706l-42.586352 42.61647a60.235294 60.235294 0 1 1-85.202824-85.202823l42.616471-42.586353c129.355294-129.385412 339.124706-129.385412 468.510117 0 129.385412 129.385412 129.385412 339.124706 0 468.510117l-42.586353 42.616471a60.235294 60.235294 0 1 1-85.202823-85.202824zM192.542118 192.542118a60.235294 60.235294 0 0 1 85.202823 0l553.712941 553.712941a60.235294 60.235294 0 0 1-85.202823 85.202823L192.542118 277.744941a60.235294 60.235294 0 0 1 0-85.202823z"
+        ''' <summary>
+        ''' 图标，向右箭头，1x
+        ''' </summary>
+        Public Const IconButtonRight As String = "M757.792745 435.407215L419.597482 96.904967c-40.010393-40.010393-104.886579-40.010393-144.896972 0-40.010393 40.010393-40.010393 104.988908 0 144.9993L540.344959 507.855701 274.70051 773.807135c-40.010393 40.112721-40.010393 104.988908 0 144.9993 40.010393 40.010393 104.886579 40.010393 144.896972 0l338.092935-338.39992c40.112721-40.010393 40.112721-104.988908 0.102328-144.9993z"
+        ''' <summary>
+        ''' 图标按钮，复制
+        ''' </summary>
+        Public Const IconButtonCopy As String = "M394.666667 106.666667h448a74.666667 74.666667 0 0 1 74.666666 74.666666v448a74.666667 74.666667 0 0 1-74.666666 74.666667H394.666667a74.666667 74.666667 0 0 1-74.666667-74.666667V181.333333a74.666667 74.666667 0 0 1 74.666667-74.666666z m0 64a10.666667 10.666667 0 0 0-10.666667 10.666666v448a10.666667 10.666667 0 0 0 10.666667 10.666667h448a10.666667 10.666667 0 0 0 10.666666-10.666667V181.333333a10.666667 10.666667 0 0 0-10.666666-10.666666H394.666667z m245.333333 597.333333a32 32 0 0 1 64 0v74.666667a74.666667 74.666667 0 0 1-74.666667 74.666666H181.333333a74.666667 74.666667 0 0 1-74.666666-74.666666V394.666667a74.666667 74.666667 0 0 1 74.666666-74.666667h74.666667a32 32 0 0 1 0 64h-74.666667a10.666667 10.666667 0 0 0-10.666666 10.666667v448a10.666667 10.666667 0 0 0 10.666666 10.666666h448a10.666667 10.666667 0 0 0 10.666667-10.666666v-74.666667z"
+        ''' <summary>
+        ''' 图标，服务端，1x
+        ''' </summary>
+        Public Const IconButtonServer As String = "M224 160a64 64 0 0 0-64 64v576a64 64 0 0 0 64 64h576a64 64 0 0 0 64-64V224a64 64 0 0 0-64-64H224z m0 384h576v256H224v-256z m192 96v64h320v-64H416z m-128 0v64h64v-64H288zM224 224h576v256H224V224z m192 96v64h320v-64H416z m-128 0v64h64v-64H288z"
         ''' <summary>
         ''' 图标，音符，1x
         ''' </summary>
@@ -1189,7 +1201,7 @@ Re:
                     Try
                         GetJson(Content)
                     Catch ex As Exception
-                        Throw New Exception("不是有效的 json 文件", ex)
+                        Throw New Exception("不是有效的 Json 文件", ex)
                     End Try
                 End If
                 Return Nothing
@@ -1201,7 +1213,7 @@ Re:
     End Class
 
     ''' <summary>
-    ''' 尝试根据后缀名判断文件种类并解压文件，支持 gz 与 zip，会尝试将 jar 以 zip 方式解压。
+    ''' 尝试根据后缀名判断文件种类并解压文件，支持 gz 与 zip，会尝试将 Jar 以 zip 方式解压。
     ''' 会尝试创建，但不会清空目标文件夹。
     ''' </summary>
     Public Sub ExtractFile(CompressFilePath As String, DestDirectory As String, Optional Encode As Encoding = Nothing)
@@ -1345,8 +1357,8 @@ RetryDir:
 
         '常见错误（记得同时修改下面的）
         Dim CommonReason As String = Nothing
-        If TypeOf InnerEx Is TypeLoadException OrElse TypeOf InnerEx Is MissingMethodException OrElse TypeOf InnerEx Is NotImplementedException OrElse TypeOf InnerEx Is TypeInitializationException Then
-            CommonReason = "PCL 的运行环境存在问题。请尝试重新安装 .NET Framework 4.6.2 然后再试。"
+        If TypeOf InnerEx Is TypeLoadException OrElse TypeOf InnerEx Is BadImageFormatException OrElse TypeOf InnerEx Is MissingMethodException OrElse TypeOf InnerEx Is NotImplementedException OrElse TypeOf InnerEx Is TypeInitializationException Then
+            CommonReason = "PCL 的运行环境存在问题。请尝试重新安装 .NET Framework 4.6.2 然后再试。若无法安装，请先卸载较新版本的 .NET Framework，然后再尝试安装。"
         ElseIf TypeOf InnerEx Is UnauthorizedAccessException Then
             CommonReason = "PCL 的权限不足。请尝试右键 PCL，选择以管理员身份运行。"
         ElseIf TypeOf InnerEx Is OutOfMemoryException Then
@@ -1365,7 +1377,7 @@ RetryDir:
         If CommonReason Is Nothing Then
             Return Desc & Stack & TypeDesc
         Else
-            Dim Result As String = DescList.First & vbCrLf & CommonReason & vbCrLf & "————————————" & vbCrLf
+            Dim Result As String = CommonReason & vbCrLf & DescList.First & vbCrLf & "————————————" & vbCrLf
             DescList(0) = "详细错误信息："
             Return Result & Join(DescList, vbCrLf & "→ ") & Stack & TypeDesc
         End If
@@ -1393,8 +1405,8 @@ RetryDir:
 
         '常见错误（记得同时修改上面的）
         Dim CommonReason As String = Nothing
-        If TypeOf InnerEx Is TypeLoadException OrElse TypeOf InnerEx Is MissingMethodException OrElse TypeOf InnerEx Is NotImplementedException OrElse TypeOf InnerEx Is TypeInitializationException Then
-            CommonReason = "PCL 的运行环境存在问题。请尝试重新安装 .NET Framework 4.6.2 然后再试。"
+        If TypeOf InnerEx Is TypeLoadException OrElse TypeOf InnerEx Is BadImageFormatException OrElse TypeOf InnerEx Is MissingMethodException OrElse TypeOf InnerEx Is NotImplementedException OrElse TypeOf InnerEx Is TypeInitializationException Then
+            CommonReason = "PCL 的运行环境存在问题。请尝试重新安装 .NET Framework 4.6.2 然后再试。若无法安装，请先卸载较新版本的 .NET Framework，然后再尝试安装。"
         ElseIf TypeOf InnerEx Is UnauthorizedAccessException Then
             CommonReason = "PCL 的权限不足。请尝试右键 PCL，选择以管理员身份运行。"
         ElseIf TypeOf InnerEx Is OutOfMemoryException Then
@@ -1408,7 +1420,7 @@ RetryDir:
 
         '构造输出信息
         If CommonReason IsNot Nothing Then
-            Return DescList.First & "：" & CommonReason
+            Return CommonReason & "详细错误：" & DescList.First
         Else
             DescList.Reverse() '让最深层错误在最左边
             Return Join(DescList, " → ")
@@ -1809,10 +1821,10 @@ RetryDir:
         '进行搜索，获取相似信息
         For Each Entry In Entries
             Entry.Similarity = SearchSimilarityWeighted(Entry.SearchSource, Query)
-            Entry.AbsoluteRight = False
-            For Each Pair In Entry.SearchSource
-                If Pair.Key.Replace(" ", "").ContainsF(Query.Replace(" ", ""), True) Then Entry.AbsoluteRight = True
-            Next
+            Entry.AbsoluteRight =
+                Query.Split(" ").All( '对于按空格分割的每一段
+                Function(QueryPart) Entry.SearchSource.Any( '若与任意一个搜索源完全匹配，则标记为完全匹配项
+                Function(Source) Source.Key.Replace(" ", "").ContainsF(QueryPart, True)))
         Next
         '按照相似度进行排序
         Entries = Sort(Entries,
@@ -1840,6 +1852,29 @@ RetryDir:
 #End Region
 
 #Region "系统"
+
+    ''' <summary>
+    ''' 可用于临时存放文件的，不含任何特殊字符的文件夹路径，以“\”结尾。
+    ''' </summary>
+    Public PathPure As String = GetPureASCIIDir()
+    Private Function GetPureASCIIDir() As String
+        If (Path & "PCL").IsASCII() Then
+            Return Path & "PCL\"
+        ElseIf PathAppdata.IsASCII() Then
+            Return PathAppdata
+        ElseIf PathTemp.IsASCII() Then
+            Return PathTemp
+        Else
+            Return OsDrive & "ProgramData\PCL\"
+        End If
+    End Function
+
+    ''' <summary>
+    ''' 指示接取到这个异常的函数进行重试。
+    ''' </summary>
+    Public Class RestartException
+        Inherits Exception
+    End Class
 
     ''' <summary>
     ''' 当前程序是否拥有管理员权限。
@@ -2429,6 +2464,14 @@ Retry:
         Dim bounds As Rect = element.TransformToAncestor(FrmMain).TransformBounds(New Rect(0, 0, element.ActualWidth, element.ActualHeight))
         Dim rect As New Rect(0, 0, FrmMain.ActualWidth, FrmMain.ActualHeight)
         Return rect.Contains(bounds.TopLeft) OrElse rect.Contains(bounds.BottomRight)
+    End Function
+
+    ''' <summary>
+    ''' 控件是否受到 TextTrimming 属性影响，导致内容被截取。
+    ''' </summary>
+    <Extension> Public Function IsTextTrimmed(Control As TextBlock) As Boolean
+        Control.Measure(New Size(Double.MaxValue, Double.MaxValue))
+        Return Control.DesiredSize.Width > Control.ActualWidth
     End Function
 
 #End Region

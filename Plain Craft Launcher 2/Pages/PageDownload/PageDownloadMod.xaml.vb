@@ -13,12 +13,18 @@
     Private Shared Function LoaderInput() As CompProjectRequest
         Dim Request As New CompProjectRequest(CompType.Mod, Storage, (Page + 1) * PageSize)
         If FrmDownloadMod IsNot Nothing Then
+            Dim ModLoader As CompModLoaderType = Val(FrmDownloadMod.ComboSearchLoader.SelectedItem.Tag)
+            Dim GameVersion As String = If(FrmDownloadMod.TextSearchVersion.Text = "全部 (也可自行输入)", Nothing,
+                    If(FrmDownloadMod.TextSearchVersion.Text.Contains(".") OrElse FrmDownloadMod.TextSearchVersion.Text.Contains("w"), FrmDownloadMod.TextSearchVersion.Text, Nothing))
+            If GameVersion IsNot Nothing AndAlso GameVersion.Contains(".") AndAlso Val(GameVersion.Split(".")(1)) < 14 AndAlso '1.14-
+                ModLoader = CompModLoaderType.Forge Then '选择了 Forge
+                ModLoader = CompModLoaderType.Any '此时，视作没有筛选 Mod Loader（因为部分老 Mod 没有设置自己支持的加载器）
+            End If
             With Request
                 .SearchText = FrmDownloadMod.TextSearchName.Text
-                .GameVersion = If(FrmDownloadMod.TextSearchVersion.Text = "全部 (也可自行输入)", Nothing,
-                    If(FrmDownloadMod.TextSearchVersion.Text.Contains(".") OrElse FrmDownloadMod.TextSearchVersion.Text.Contains("w"), FrmDownloadMod.TextSearchVersion.Text, Nothing))
+                .GameVersion = GameVersion
                 .Tag = FrmDownloadMod.ComboSearchTag.SelectedItem.Tag
-                .ModLoader = Val(FrmDownloadMod.ComboSearchLoader.SelectedItem.Tag)
+                .ModLoader = ModLoader
                 .Source = CType(Val(FrmDownloadMod.ComboSearchSource.SelectedItem.Tag), CompSourceType)
             End With
         End If
@@ -68,8 +74,8 @@
             Case LoadState.Failed
                 Dim ErrorMessage As String = ""
                 If Loader.Error IsNot Nothing Then ErrorMessage = Loader.Error.Message
-                If ErrorMessage.Contains("不是有效的 json 文件") Then
-                    Log("[Download] 下载的 Mod 列表 json 文件损坏，已自动重试", LogLevel.Debug)
+                If ErrorMessage.Contains("不是有效的 Json 文件") Then
+                    Log("[Download] 下载的 Mod 列表 Json 文件损坏，已自动重试", LogLevel.Debug)
                     PageLoaderRestart()
                 End If
         End Select
