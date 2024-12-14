@@ -767,7 +767,6 @@ Retry:
             Addons.Add(Entry("id"), Entry("version"))
         Next
         If Not Addons.ContainsKey("game") Then Throw New Exception("该 MCBBS 整合包未提供游戏版本信息，无法安装！")
-        End If
         Dim Request As New McInstallRequest With {
             .TargetVersionName = VersionName,
             .TargetVersionFolder = $"{PathMcFolder}versions\{VersionName}\",
