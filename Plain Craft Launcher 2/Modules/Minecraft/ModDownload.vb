@@ -269,6 +269,7 @@
             Else '如果缓存文件存在，则将其读取并合并到版本列表中
                 Dim CachedJson As JObject = GetJson(ReadFile(CacheFilePath))
                 Versions.Merge(CachedJson("versions"))
+            End If
             '检查是否有要求的版本（#5195）
             If Not String.IsNullOrEmpty(Loader.Input) Then
                 Dim Id = Loader.Input
