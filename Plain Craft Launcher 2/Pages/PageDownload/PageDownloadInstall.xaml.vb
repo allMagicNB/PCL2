@@ -526,7 +526,7 @@ Public Class PageDownloadInstall
             Else
                 BtnQSLClear.Visibility = Visibility.Visible
                 ImgQSL.Visibility = Visibility.Visible
-                LabQSL.Text = SelectedQSL.DisplayName.Split("]").Trim
+                LabQSL.Text = SelectedQSL.DisplayName.Split("]").First.Trim
                 LabQSL.Foreground = ColorGray1
             End If
         End If
