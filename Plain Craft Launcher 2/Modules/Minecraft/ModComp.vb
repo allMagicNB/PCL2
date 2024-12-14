@@ -13,6 +13,10 @@
         ''' 资源包。
         ''' </summary>
         ResourcePack = 2
+        ''' <summary>
+        ''' 光影包。
+        ''' </summary>
+        Shader = 3
     End Enum
     Public Enum CompModLoaderType
         'https://docs.curseforge.com/?http#tocS_ModLoaderType
@@ -271,7 +275,7 @@
                     Next
                     CurseForgeFileIds = Files.Select(Function(f) f.Key).Distinct.ToList
                     GameVersions = Files.SelectMany(Function(f) f.Value).Where(Function(v) v.StartsWithF("1.")).
-                        Select(Function(v) CInt(Val(v.Split(".")(1).Before("-")))).Where(Function(v) v > 0).
+                        Select(Function(v) CInt(Val(v.Split(".")(1).BeforeFirst("-")))).Where(Function(v) v > 0).
                         Distinct.OrderByDescending(Function(v) v).ToList
                     ModLoaders = ModLoaders.Distinct.OrderBy(Of Integer)(Function(t) t).ToList
                     'Type
@@ -279,8 +283,10 @@
                         Type = CompType.Mod
                     ElseIf Website.Contains("/modpacks/") Then
                         Type = CompType.ModPack
-                    Else
+                    ElseIf Website.Contains("/texture-packs/") Then
                         Type = CompType.ResourcePack
+                    Else 'Website.Contains("/shaders/")
+                        Type = CompType.Shader
                     End If
                     'Tags
                     Tags = New List(Of String)
@@ -328,7 +334,27 @@
                             Case 4480 : Tags.Add("基于地图")
                             Case 4481 : Tags.Add("轻量")
                             Case 4482 : Tags.Add("大型")
-                                'FUTURE: Res
+                        '资源包
+                            Case 5244 : Tags.Add("字体包")
+                            Case 5193 : Tags.Add("数据包")
+                            Case 399 : Tags.Add("蒸汽朋克")
+                            Case 396 : Tags.Add("128x")
+                            Case 398 : Tags.Add("512x 或更高")
+                            Case 397 : Tags.Add("256x")
+                            Case 405 : Tags.Add("其他")
+                            Case 395 : Tags.Add("64x")
+                            Case 400 : Tags.Add("仿真")
+                            Case 393 : Tags.Add("16x")
+                            Case 403 : Tags.Add("传统")
+                            Case 394 : Tags.Add("32x")
+                            Case 404 : Tags.Add("动态效果")
+                            Case 4465 : Tags.Add("模组支持")
+                            Case 402 : Tags.Add("中世纪")
+                            Case 401 : Tags.Add("现代")
+                        '光影包
+                            Case 6553 : Tags.Add("写实")
+                            Case 6554 : Tags.Add("幻想")
+                            Case 6555 : Tags.Add("原版风")
                         End Select
                     Next
                     If Not Tags.Any() Then Tags.Add("杂项")
@@ -349,13 +375,14 @@
                     '搜索结果的键为 versions，获取特定工程的键为 game_versions
                     GameVersions = If(CType(If(Data("game_versions"), Data("versions")), JArray), New JArray).
                                        Select(Function(v) v.ToString).Where(Function(v) v.StartsWithF("1.")).
-                                       Select(Of Integer)(Function(v) Val(v.Split(".")(1).Before("-"))).Where(Function(v) v > 0).
+                                       Select(Of Integer)(Function(v) Val(v.Split(".")(1).BeforeFirst("-"))).Where(Function(v) v > 0).
                                        Distinct.OrderByDescending(Function(v) v).ToList
                     'Type
                     Select Case Data("project_type").ToString
                         Case "mod" : Type = CompType.Mod
                         Case "modpack" : Type = CompType.ModPack
                         Case "resourcepack" : Type = CompType.ResourcePack
+                        Case "shader" : Type = CompType.Shader
                     End Select
                     'Tags & ModLoaders
                     Tags = New List(Of String)
@@ -394,7 +421,63 @@
                             Case "adventure" : Tags.Add("冒险")
                             Case "kitchen-sink" : Tags.Add("大杂烩")
                             Case "lightweight" : Tags.Add("轻量")
-                                'FUTURE: Res
+                            '资源包
+                            Case "8x-" : Tags.Add("8x-")
+                            Case "16x" : Tags.Add("16x")
+                            Case "32x" : Tags.Add("32x")
+                            Case "48x" : Tags.Add("48x")
+                            Case "64x" : Tags.Add("64x")
+                            Case "128x" : Tags.Add("128x")
+                            Case "256x" : Tags.Add("256x")
+                            Case "512x+" : Tags.Add("512x+")
+                            Case "audio" : Tags.Add("声音")
+                            Case "blocks" : Tags.Add("方块")
+                            Case "combat" : Tags.Add("战斗")
+                            Case "core-shaders" : Tags.Add("核心着色器")
+                            Case "cursed" : Tags.Add("Cursed")
+                            Case "decoration" : Tags.Add("装饰")
+                            Case "entities" : Tags.Add("实体")
+                            Case "environment" : Tags.Add("环境")
+                            Case "equipment" : Tags.Add("装备")
+                            Case "fonts" : Tags.Add("字体")
+                            Case "gui" : Tags.Add("GUI")
+                            Case "items" : Tags.Add("物品")
+                            Case "locale" : Tags.Add("本地化")
+                            Case "modded" : Tags.Add("Modded")
+                            Case "models" : Tags.Add("模型")
+                            Case "realistic" : Tags.Add("写实")
+                            Case "simplistic" : Tags.Add("扁平")
+                            Case "themed" : Tags.Add("主题")
+                            Case "tweaks" : Tags.Add("优化")
+                            Case "utility" : Tags.Add("实用")
+                            Case "vanilla-like" : Tags.Add("类原生")
+                            '光影包
+                            Case "cartoon" : Tags.Add("卡通")
+                            Case "cursed" : Tags.Add("Cursed")
+                            Case "fantasy" : Tags.Add("幻想")
+                            Case "realistic" : Tags.Add("写实")
+                            Case "semi-realistic" : Tags.Add("半写实")
+                            Case "vanilla-like" : Tags.Add("原版风")
+
+                            Case "atmosphere" : Tags.Add("大气环境")
+                            Case "bloom" : Tags.Add("植被")
+                            Case "colored-lighting" : Tags.Add("光源着色")
+                            Case "foliage" : Tags.Add("树叶")
+                            Case "path-tracing" : Tags.Add("路径追踪")
+                            Case "pbr" : Tags.Add("PBR")
+                            Case "reflections" : Tags.Add("反射")
+                            Case "shadows" : Tags.Add("阴影")
+
+                            Case "potato" : Tags.Add("土豆画质")
+                            Case "low" : Tags.Add("低性能影响")
+                            Case "medium" : Tags.Add("中性能影响")
+                            Case "high" : Tags.Add("高性能影响")
+                            Case "screenshot" : Tags.Add("极致画质")
+
+                            Case "canvas" : Tags.Add("Canvas")
+                            Case "iris" : Tags.Add("Iris")
+                            Case "optifine" : Tags.Add("OptiFine")
+                            Case "vanilla" : Tags.Add("原版光影")
                         End Select
                     Next
                     If Not Tags.Any() Then Tags.Add("杂项")
@@ -458,14 +541,14 @@
                     If StartVersion = EndVersion Then
                         SpaVersions.Add("1." & StartVersion)
                     ElseIf McVersionHighest > -1 AndAlso StartVersion >= McVersionHighest Then
-                        If EndVersion <= 10 Then
+                        If EndVersion < 10 Then
                             SpaVersions.Clear()
                             SpaVersions.Add("全版本")
                             Exit For
                         Else
                             SpaVersions.Add("1." & EndVersion & "+")
                         End If
-                    ElseIf EndVersion <= 10 Then
+                    ElseIf EndVersion < 10 Then
                         SpaVersions.Add("1." & StartVersion & "-")
                         Exit For
                     ElseIf StartVersion - EndVersion = 1 Then
@@ -478,25 +561,31 @@
             End If
             '获取 Mod 加载器描述
             Dim ModLoaderDescriptionFull As String, ModLoaderDescriptionPart As String
-            Select Case ModLoaders.Count
+            Dim ModLoadersForDesc As New List(Of CompModLoaderType)(ModLoaders)
+            If Setup.Get("ToolDownloadIgnoreQuilt") Then ModLoadersForDesc.Remove(CompModLoaderType.Quilt)
+            Select Case ModLoadersForDesc.Count
                 Case 0
-                    ModLoaderDescriptionFull = "未知"
-                    ModLoaderDescriptionPart = ""
+                    If ModLoaders.Count = 1 Then
+                        ModLoaderDescriptionFull = "仅 " & ModLoaders.Single.ToString
+                        ModLoaderDescriptionPart = ModLoaders.Single.ToString
+                    Else
+                        ModLoaderDescriptionFull = "未知"
+                        ModLoaderDescriptionPart = ""
+                    End If
                 Case 1
-                    ModLoaderDescriptionFull = "仅 " & ModLoaders.Single.ToString
-                    ModLoaderDescriptionPart = ModLoaders.Single.ToString
-                Case 2, 3
-                    If Setup.Get("ToolDownloadIgnoreQuilt") AndAlso
-                       ModLoaders.Contains(CompModLoaderType.Forge) AndAlso ModLoaders.Contains(CompModLoaderType.Fabric) Then
+                    ModLoaderDescriptionFull = "仅 " & ModLoadersForDesc.Single.ToString
+                    ModLoaderDescriptionPart = ModLoadersForDesc.Single.ToString
+                Case Else
+                    If ModLoaders.Contains(CompModLoaderType.Forge) AndAlso
+                       (GameVersions.Max < 14 OrElse ModLoaders.Contains(CompModLoaderType.Fabric)) AndAlso
+                       (GameVersions.Max < 20 OrElse ModLoaders.Contains(CompModLoaderType.NeoForge)) AndAlso
+                       (GameVersions.Max < 14 OrElse ModLoaders.Contains(CompModLoaderType.Quilt) OrElse Setup.Get("ToolDownloadIgnoreQuilt")) Then
                         ModLoaderDescriptionFull = "任意"
                         ModLoaderDescriptionPart = ""
                     Else
-                        ModLoaderDescriptionFull = ModLoaders.Join(" / ")
-                        ModLoaderDescriptionPart = ModLoaders.Join(" / ")
+                        ModLoaderDescriptionFull = ModLoadersForDesc.Join(" / ")
+                        ModLoaderDescriptionPart = ModLoadersForDesc.Join(" / ")
                     End If
-                Case Else
-                    ModLoaderDescriptionFull = "任意"
-                    ModLoaderDescriptionPart = ""
             End Select
             '实例化 UI
             Dim NewItem As New MyCompItem With {.Tag = Me, .Logo = GetControlLogo()}
@@ -583,9 +672,9 @@
                 '有中文翻译
                 '尝试将文本分为三段：Title (EnglishName) - Suffix
                 '检查时注意 Carpet：它没有中文译名，但有 Suffix
-                Title = TranslatedName.Before(" (").Before(" - ")
+                Title = TranslatedName.BeforeFirst(" (").BeforeFirst(" - ")
                 Dim Suffix As String = ""
-                If TranslatedName.After(")").Contains(" - ") Then Suffix = TranslatedName.After(")").After(" - ")
+                If TranslatedName.AfterLast(")").Contains(" - ") Then Suffix = TranslatedName.AfterLast(")").AfterLast(" - ")
                 Dim EnglishName As String = TranslatedName
                 If Suffix <> "" Then EnglishName = EnglishName.Replace(" - " & Suffix, "")
                 EnglishName = EnglishName.Replace(Title, "").Trim("("c, ")"c, " "c)
@@ -756,9 +845,11 @@ NoSubtitle:
                 Case CompType.ModPack
                     Address += "&classId=4471"
                 Case CompType.ResourcePack
-                    'FUTURE: Res
+                    Address += "&classId=12"
+                Case CompType.Shader
+                    Address += "&classId=6552"
             End Select
-            Address += "&categoryId=" & If(Tag = "", "0", Tag.Before("/"))
+            Address += "&categoryId=" & If(Tag = "", "0", Tag.BeforeFirst("/"))
             If ModLoader <> CompModLoaderType.Any Then Address += "&modLoaderType=" & CType(ModLoader, Integer)
             If Not String.IsNullOrEmpty(GameVersion) Then Address += "&gameVersion=" & GameVersion
             If Not String.IsNullOrEmpty(SearchText) Then Address += "&searchFilter=" & Net.WebUtility.UrlEncode(SearchText)
@@ -779,7 +870,7 @@ NoSubtitle:
             'facets=[["categories:'game-mechanics'"],["categories:'forge'"],["versions:1.19.3"],["project_type:mod"]]
             Dim Facets As New List(Of String)
             Facets.Add($"[""project_type:{GetStringFromEnum(Type).ToLower}""]")
-            If Not String.IsNullOrEmpty(Tag) Then Facets.Add($"[""categories:'{Tag.After("/")}'""]")
+            If Not String.IsNullOrEmpty(Tag) Then Facets.Add($"[""categories:'{Tag.AfterLast("/")}'""]")
             If ModLoader <> CompModLoaderType.Any Then Facets.Add($"[""categories:'{GetStringFromEnum(ModLoader).ToLower}'""]")
             If Not String.IsNullOrEmpty(GameVersion) Then Facets.Add($"[""versions:'{GameVersion}'""]")
             Address += "&facets=[" & String.Join(",", Facets) & "]"
@@ -887,7 +978,7 @@ NoSubtitle:
                 If Not SearchResults(i).AbsoluteRight AndAlso i >= Math.Min(2, SearchResults.Count - 1) Then Exit For '把 3 个结果拼合以提高准确度
                 If SearchResults(i).Item.CurseForgeSlug IsNot Nothing Then SearchResult += SearchResults(i).Item.CurseForgeSlug.Replace("-", " ").Replace("/", " ") & " "
                 If SearchResults(i).Item.ModrinthSlug IsNot Nothing Then SearchResult += SearchResults(i).Item.ModrinthSlug.Replace("-", " ").Replace("/", " ") & " "
-                SearchResult += SearchResults(i).Item.ChineseName.After(" (").TrimEnd(") ").Before(" - ").
+                SearchResult += SearchResults(i).Item.ChineseName.AfterLast(" (").TrimEnd(") ").BeforeFirst(" - ").
                     Replace(":", "").Replace("(", "").Replace(")", "").ToLower.Replace("/", " ") & " "
             Next
             Log("[Comp] 中文搜索原始关键词：" & SearchResult, LogLevel.Developer)
@@ -1156,7 +1247,7 @@ Retry:
         ''' </summary>
         Public ReadOnly ModLoaders As List(Of CompModLoaderType)
         ''' <summary>
-        ''' 支持的游戏版本列表。类型包括："1.18.5"，"1.18"，"1.18 快照"，"21w15a"，"未知版本"。
+        ''' 支持的游戏版本列表。类型包括："1.18.5"，"1.18"，"1.18 预览版"，"21w15a"，"未知版本"。
         ''' </summary>
         Public ReadOnly GameVersions As List(Of String)
         ''' <summary>
@@ -1272,7 +1363,7 @@ Retry:
                     End If
                     'GameVersions
                     Dim RawVersions As List(Of String) = Data("gameVersions").Select(Function(t) t.ToString.Trim.ToLower).ToList
-                    GameVersions = RawVersions.Where(Function(v) v.StartsWithF("1.")).Select(Function(v) v.Replace("-snapshot", " 快照")).ToList
+                    GameVersions = RawVersions.Where(Function(v) v.StartsWithF("1.")).Select(Function(v) v.Replace("-snapshot", " 预览版")).ToList
                     If GameVersions.Count > 1 Then
                         GameVersions = Sort(GameVersions, AddressOf VersionSortBoolean).ToList
                         If Type = CompType.ModPack Then GameVersions = New List(Of String) From {GameVersions(0)}
@@ -1313,7 +1404,7 @@ Retry:
                     'GameVersions
                     Dim RawVersions As List(Of String) = Data("game_versions").Select(Function(t) t.ToString.Trim.ToLower).ToList
                     GameVersions = RawVersions.Where(Function(v) v.StartsWithF("1.") OrElse v.StartsWithF("b1.")).
-                                               Select(Function(v) If(v.Contains("-"), v.Before("-") & " 快照", If(v.StartsWithF("b1."), "远古版本", v))).ToList
+                                               Select(Function(v) If(v.Contains("-"), v.BeforeFirst("-") & " 预览版", If(v.StartsWithF("b1."), "远古版本", v))).ToList
                     If GameVersions.Count > 1 Then
                         GameVersions = Sort(GameVersions, AddressOf VersionSortBoolean).ToList
                         If Type = CompType.ModPack Then GameVersions = New List(Of String) From {GameVersions(0)}
@@ -1362,28 +1453,26 @@ Retry:
                                    Optional BadDisplayName As Boolean = False) As MyListItem
 
             '获取描述信息
-            Dim Info As String = ""
+            Dim Title As String = If(BadDisplayName, FileName, DisplayName)
+            Dim Info As New List(Of String)
+            If Title <> FileName.BeforeLast(".") Then Info.Add(FileName.BeforeLast("."))
             Select Case Type
                 Case CompType.Mod
-                    Info += If(ModLoaders.Any,
-                        "适用于 " & Join(ModLoaders.Select(Function(m) GetStringFromEnum(m)).ToList, "/") & "，", "")
-                    Info += If(ModeDebug AndAlso Dependencies.Any, Dependencies.Count & " 个前置 Mod，", "")
+                    If Dependencies.Any Then Info.Add(Dependencies.Count & " 个前置 Mod")
                 Case CompType.ModPack
-                    If GameVersions.All(Function(v) v.Contains("w")) Then
-                        Info += $"游戏版本 {Join(GameVersions, "、")}，"
-                    End If
+                    If GameVersions.All(Function(v) v.Contains("w")) Then Info.Add($"游戏版本 {Join(GameVersions, "、")}")
             End Select
             If DownloadCount > 0 Then 'CurseForge 的下载次数经常错误地返回 0
-                Info += If(DownloadCount > 100000, Math.Round(DownloadCount / 10000) & " 万次下载，", DownloadCount & " 次下载，")
+                Info.Add("下载 " & If(DownloadCount > 100000, Math.Round(DownloadCount / 10000) & " 万次", DownloadCount & " 次"))
             End If
-            Info += GetTimeSpanString(ReleaseDate - Date.Now, False) & "更新"
-            Info += If(Status = CompFileStatus.Release, "", "，" & StatusDescription)
+            Info.Add("更新于 " & GetTimeSpanString(ReleaseDate - Date.Now, False))
+            If Status <> CompFileStatus.Release Then Info.Add(StatusDescription)
 
             '建立控件
             Dim NewItem As New MyListItem With {
-                .Title = If(BadDisplayName, FileName, DisplayName),
+                .Title = Title,
                 .SnapsToDevicePixels = True, .Height = 42, .Type = MyListItem.CheckType.Clickable, .Tag = Me,
-                .Info = Info
+                .Info = Info.Join("，")
             }
             Select Case Status
                 Case CompFileStatus.Release
@@ -1422,14 +1511,12 @@ Retry:
     ''' <summary>
     ''' 已知文件信息的缓存。
     ''' </summary>
-    Private CompFilesCache As New Dictionary(Of String, List(Of CompFile))
+    Public CompFilesCache As New Dictionary(Of String, List(Of CompFile))
     ''' <summary>
     ''' 获取某个工程下的全部文件列表。
     ''' 必须在工作线程执行，失败会抛出异常。
     ''' </summary>
     Public Function CompFilesGet(ProjectId As String, FromCurseForge As Boolean) As List(Of CompFile)
-        '使用缓存
-        If CompFilesCache.ContainsKey(ProjectId) Then Return CompFilesCache(ProjectId)
         '获取工程对象
         Dim TargetProject As CompProject
         If CompProjectCache.ContainsKey(ProjectId) Then '存在缓存
@@ -1440,25 +1527,26 @@ Retry:
             TargetProject = New CompProject(DlModRequest("https://api.modrinth.com/v2/project/" & ProjectId, IsJson:=True))
         End If
         '获取工程对象的文件列表
-        Log("[Comp] 开始获取文件列表：" & ProjectId)
-        Dim ResultJsonArray As JArray
-        If FromCurseForge Then
-            'CurseForge
-            If TargetProject.Type = CompType.Mod Then 'Mod 使用每个版本最新的文件
-                ResultJsonArray = GetJson(DlModRequest("https://api.curseforge.com/v1/mods/files", "POST", "{""fileIds"": [" & Join(TargetProject.CurseForgeFileIds, ",") & "]}", "application/json"))("data")
-            Else '否则使用全部文件
-                ResultJsonArray = DlModRequest($"https://api.curseforge.com/v1/mods/{ProjectId}/files?pageSize=999", IsJson:=True)("data")
+        If Not CompFilesCache.ContainsKey(ProjectId) Then '有缓存也不能直接返回，这时候前置 Mod 可能没获取（#5173）
+            Log("[Comp] 开始获取文件列表：" & ProjectId)
+            Dim ResultJsonArray As JArray
+            If FromCurseForge Then
+                'CurseForge
+                If TargetProject.Type = CompType.Mod Then 'Mod 使用每个版本最新的文件
+                    ResultJsonArray = GetJson(DlModRequest("https://api.curseforge.com/v1/mods/files", "POST", "{""fileIds"": [" & Join(TargetProject.CurseForgeFileIds, ",") & "]}", "application/json"))("data")
+                Else '否则使用全部文件
+                    ResultJsonArray = DlModRequest($"https://api.curseforge.com/v1/mods/{ProjectId}/files?pageSize=999", IsJson:=True)("data")
+                End If
+            Else
+                'Modrinth
+                ResultJsonArray = DlModRequest($"https://api.modrinth.com/v2/project/{ProjectId}/version", IsJson:=True)
             End If
-        Else
-            'Modrinth
-            ResultJsonArray = DlModRequest($"https://api.modrinth.com/v2/project/{ProjectId}/version", IsJson:=True)
+            CompFilesCache(ProjectId) = ResultJsonArray.Select(Function(a) New CompFile(a, TargetProject.Type)).
+                Where(Function(a) a.Available).ToList.Distinct(Function(a, b) a.Id = b.Id) 'CurseForge 可能会重复返回相同项（#1330）
         End If
-        CompFilesCache(ProjectId) = ResultJsonArray.Select(Function(a) New CompFile(a, TargetProject.Type)).
-            Where(Function(a) a.Available).ToList.Distinct(Function(a, b) a.Id = b.Id) 'CurseForge 可能会重复返回相同项（#1330）
         '获取前置 Mod 列表
         If TargetProject.Type <> CompType.Mod Then Return CompFilesCache(ProjectId)
-        Dim Deps As List(Of String) = CompFilesCache(ProjectId).
-            SelectMany(Function(f) f.RawDependencies).Distinct().ToList
+        Dim Deps As List(Of String) = CompFilesCache(ProjectId).SelectMany(Function(f) f.RawDependencies).Distinct().ToList
         Dim UndoneDeps = Deps.Where(Function(f) Not CompProjectCache.ContainsKey(f)).ToList
         '获取前置 Mod 工程信息
         If UndoneDeps.Any Then

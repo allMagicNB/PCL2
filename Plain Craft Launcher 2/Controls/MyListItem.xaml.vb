@@ -212,33 +212,26 @@
             If Not _Logo = "" Then
                 If _Logo.StartsWithF("http", True) Then
                     '网络图片
-                    PathLogo = New Image With {
+                    PathLogo = New MyImage With {
                             .Tag = Me,
                             .IsHitTestVisible = LogoClickable,
-                            .Source = New ImageSourceConverter().ConvertFromString(_Logo),
+                            .Source = _Logo,
                             .RenderTransformOrigin = New Point(0.5, 0.5),
                             .RenderTransform = New ScaleTransform With {.ScaleX = LogoScale, .ScaleY = LogoScale},
                             .SnapsToDevicePixels = True, .UseLayoutRounding = False}
                     RenderOptions.SetBitmapScalingMode(PathLogo, BitmapScalingMode.Linear)
-                ElseIf _Logo.EndsWithF(".png", True) OrElse _Logo.EndsWithF(".jpg", True) Then
+                ElseIf _Logo.EndsWithF(".png", True) OrElse _Logo.EndsWithF(".jpg", True) OrElse _Logo.EndsWithF(".webp", True) Then
                     '位图
-                    Dim Bitmap = New MyBitmap(_Logo)
                     PathLogo = New Canvas With {
                             .Tag = Me,
                             .IsHitTestVisible = LogoClickable,
-                            .Background = Bitmap,
+                            .Background = New MyBitmap(_Logo),
                             .RenderTransformOrigin = New Point(0.5, 0.5),
                             .RenderTransform = New ScaleTransform With {.ScaleX = LogoScale, .ScaleY = LogoScale},
-                            .SnapsToDevicePixels = True, .UseLayoutRounding = False}
-                    'If Bitmap.Pic.Width = 16 AndAlso Bitmap.Pic.Height = 16 Then
-                    '    '使用最适合 16x16 物品图片显示的大小
-                    '    RenderOptions.SetBitmapScalingMode(PathLogo, BitmapScalingMode.NearestNeighbor)
-                    '    PathLogo.HorizontalAlignment = HorizontalAlignment.Center : PathLogo.VerticalAlignment = VerticalAlignment.Center
-                    '    PathLogo.Width = GetWPFSize(Math.Floor(GetPixelSize(32) / 16) * 16) : PathLogo.Height = PathLogo.Width
-                    'Else
-                    PathLogo.HorizontalAlignment = HorizontalAlignment.Stretch : PathLogo.VerticalAlignment = VerticalAlignment.Stretch
-                    RenderOptions.SetBitmapScalingMode(PathLogo, BitmapScalingMode.HighQuality)
-                    'End If
+                            .SnapsToDevicePixels = True, .UseLayoutRounding = False,
+                            .HorizontalAlignment = HorizontalAlignment.Stretch, .VerticalAlignment = VerticalAlignment.Stretch
+                    }
+                    RenderOptions.SetBitmapScalingMode(PathLogo, BitmapScalingMode.Linear)
                 Else
                     '矢量图
                     PathLogo = New Shapes.Path With {
@@ -327,8 +320,8 @@
     Private Sub OnSizeChanged() Handles Me.SizeChanged
         ColumnCheck.Width = New GridLength(If(_Type = CheckType.None OrElse _Type = CheckType.Clickable, If(Height < 40, 4, 2), 6))
         ColumnLogo.Width = New GridLength(If(_Logo = "", 0, 34) + If(Height < 40, 0, 4))
-        If Not IsNothing(PathLogo) Then
-            If _Logo.EndsWithF(".png", True) Then
+        If PathLogo IsNot Nothing Then
+            If _Logo.EndsWithF(".png", True) OrElse _Logo.EndsWithF(".jpg", True) OrElse _Logo.EndsWithF(".webp", True) Then
                 PathLogo.Margin = New Thickness(4, 5, 3, 5)
             Else
                 PathLogo.Margin = New Thickness(If(Height < 40, 6, 8), 8, If(Height < 40, 4, 6), 8)
@@ -344,7 +337,16 @@
             Return _Checked
         End Get
         Set(value As Boolean)
-            SetChecked(value, False, True)
+            SetChecked(value, False, True, _Half)
+        End Set
+    End Property
+    Private _Half As Boolean = False
+    Public Property Half As Boolean
+        Get
+            Return _Half
+        End Get
+        Set(value As Boolean)
+            SetChecked(_Checked, False, True, value)
         End Set
     End Property
     ''' <summary>
@@ -353,7 +355,8 @@
     ''' <param name="value">新的 Checked 属性。</param>
     ''' <param name="user">是否由用户引发。</param>
     ''' <param name="anime">是否执行动画。</param>
-    Public Sub SetChecked(value As Boolean, user As Boolean, anime As Boolean)
+    ''' <param name="half">是否为部分选中。</param>
+    Public Sub SetChecked(value As Boolean, user As Boolean, anime As Boolean, Optional half As Boolean = False)
         Try
 
             '自定义属性基础
@@ -371,8 +374,9 @@
                 End If
                 _Checked = value
             Else
-                If value = _Checked Then Exit Sub
+                If value = _Checked AndAlso half = _Half Then Exit Sub
                 _Checked = value
+                _Half = half
                 If IsInitialized Then
                     RaiseEvent Changed(Me, ChangedEventArgs)
                     If ChangedEventArgs.Handled Then
@@ -436,9 +440,9 @@
                     '由无变有
                     If Not IsNothing(RectCheck) Then
                         Dim Delta = ActualHeight - RectCheck.ActualHeight - 12
-                        Anim.Add(AaHeight(RectCheck, Delta * 0.4, 200,, New AniEaseOutFluent(AniEasePower.Weak)))
-                        Anim.Add(AaHeight(RectCheck, Delta * 0.6, 300,, New AniEaseOutBack(AniEasePower.Weak)))
-                        Anim.Add(AaOpacity(RectCheck, 1 - RectCheck.Opacity, 30))
+                        Anim.Add(AaHeight(RectCheck, Delta * If(half, 0.2, 0.4), 200,, New AniEaseOutFluent(AniEasePower.Weak)))
+                        Anim.Add(AaHeight(RectCheck, Delta * If(half, 0.3, 0.6), 300,, New AniEaseOutBack(AniEasePower.Weak)))
+                        Anim.Add(AaOpacity(RectCheck, If(half, 0.5, 1) - RectCheck.Opacity, 30))
                         RectCheck.VerticalAlignment = VerticalAlignment.Center
                         RectCheck.Margin = New Thickness(-1, 0, 0, 0)
                     End If
@@ -457,12 +461,17 @@
             Else
                 '不使用动画
                 AniStop("MyListItem Checked " & Uuid)
-                If Checked Then
+
+                If Checked OrElse half Then
                     If Not IsNothing(RectCheck) Then
                         RectCheck.Height = Double.NaN
                         RectCheck.Margin = New Thickness(-1, 6, 0, 6)
                         RectCheck.Opacity = 1
                         RectCheck.VerticalAlignment = VerticalAlignment.Stretch
+                        If half Then
+                            RectCheck.Height = Height * 0.4
+                            RectCheck.Opacity = 0.5
+                        End If
                     End If
                     SetResourceReference(ForegroundProperty, If(Height < 40, "ColorBrush3", "ColorBrush2"))
                 Else
@@ -661,6 +670,8 @@
                 Dim Unused = New HelpEntry(GetEventAbsoluteUrls(EventData, EventType)(0)).SetToListItem(Me)
             Catch ex As Exception
                 Log(ex, "设置帮助 MyListItem 失败", LogLevel.Msgbox)
+                EventType = Nothing
+                EventData = Nothing
             End Try
         End If
     End Sub

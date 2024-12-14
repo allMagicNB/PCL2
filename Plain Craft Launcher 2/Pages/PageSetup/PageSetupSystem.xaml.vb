@@ -1,33 +1,5 @@
 ﻿Class PageSetupSystem
 
-#Region "语言"
-    'Private Sub PageSetupUI_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
-    '  AniControlEnabled -= 1
-
-    '  '读取设置
-    '  Select Case Lang
-    '      Case "zh_CN"
-    '          ComboLang.SelectedIndex = 0
-    '      Case "zh_HK"
-    '          ComboLang.SelectedIndex = 1
-    '      Case "en_US"
-    '          ComboLang.SelectedIndex = 2
-    '  End Select
-    '  CheckDebug.Checked = ReadReg("SystemDebugMode", "False")
-
-    '  AniControlEnabled += 1
-    'End Sub
-
-    'Private Sub RefreshLang() Handles ComboLang.SelectionChanged
-    '  If IsLoaded Then
-    '      If Not ComboLang.IsLoaded Then Exit Sub
-    '      Lang = CType(ComboLang.SelectedItem, MyComboBoxItem).Tag
-    '      Application.Current.Resources.MergedDictionaries(1) = New ResourceDictionary With {.Source = New Url("Languages\" & Lang & ".xaml", UrlKind.Relative)}
-    '      WriteReg("Lang", Lang)
-    '  End If
-    'End Sub
-#End Region
-
     Private Shadows IsLoaded As Boolean = False
 
     Private Sub PageSetupSystem_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
@@ -58,11 +30,13 @@
         SliderDownloadThread.Value = Setup.Get("ToolDownloadThread")
         SliderDownloadSpeed.Value = Setup.Get("ToolDownloadSpeed")
         ComboDownloadVersion.SelectedIndex = Setup.Get("ToolDownloadVersion")
+        CheckDownloadCert.Checked = Setup.Get("ToolDownloadCert")
+
+        'Mod 与整合包
         ComboDownloadTranslate.SelectedIndex = Setup.Get("ToolDownloadTranslate")
         ComboDownloadMod.SelectedIndex = Setup.Get("ToolDownloadMod")
-        CheckDownloadKeepModpack.Checked = Setup.Get("ToolDownloadKeepModpack")
+        ComboModLocalNameStyle.SelectedIndex = Setup.Get("ToolModLocalNameStyle")
         CheckDownloadIgnoreQuilt.Checked = Setup.Get("ToolDownloadIgnoreQuilt")
-        CheckDownloadCert.Checked = Setup.Get("ToolDownloadCert")
 
         'Minecraft 更新提示
         CheckUpdateRelease.Checked = Setup.Get("ToolUpdateRelease")
@@ -91,10 +65,10 @@
             Setup.Reset("ToolDownloadSpeed")
             Setup.Reset("ToolDownloadVersion")
             Setup.Reset("ToolDownloadTranslate")
-            Setup.Reset("ToolDownloadKeepModpack")
             Setup.Reset("ToolDownloadIgnoreQuilt")
             Setup.Reset("ToolDownloadCert")
             Setup.Reset("ToolDownloadMod")
+            Setup.Reset("ToolModLocalNameStyle")
             Setup.Reset("ToolUpdateRelease")
             Setup.Reset("ToolUpdateSnapshot")
             Setup.Reset("ToolHelpChinese")
@@ -116,13 +90,13 @@
     End Sub
 
     '将控件改变路由到设置改变
-    Private Shared Sub CheckBoxChange(sender As MyCheckBox, e As Object) Handles CheckDebugMode.Change, CheckDebugDelay.Change, CheckDebugSkipCopy.Change, CheckUpdateRelease.Change, CheckUpdateSnapshot.Change, CheckHelpChinese.Change, CheckDownloadKeepModpack.Change, CheckDownloadIgnoreQuilt.Change, CheckDownloadCert.Change
+    Private Shared Sub CheckBoxChange(sender As MyCheckBox, e As Object) Handles CheckDebugMode.Change, CheckDebugDelay.Change, CheckDebugSkipCopy.Change, CheckUpdateRelease.Change, CheckUpdateSnapshot.Change, CheckHelpChinese.Change, CheckDownloadIgnoreQuilt.Change, CheckDownloadCert.Change
         If AniControlEnabled = 0 Then Setup.Set(sender.Tag, sender.Checked)
     End Sub
     Private Shared Sub SliderChange(sender As MySlider, e As Object) Handles SliderDebugAnim.Change, SliderDownloadThread.Change, SliderDownloadSpeed.Change
         If AniControlEnabled = 0 Then Setup.Set(sender.Tag, sender.Value)
     End Sub
-    Private Shared Sub ComboChange(sender As MyComboBox, e As Object) Handles ComboDownloadVersion.SelectionChanged, ComboDownloadTranslate.SelectionChanged, ComboSystemUpdate.SelectionChanged, ComboSystemActivity.SelectionChanged, ComboDownloadMod.SelectionChanged
+    Private Shared Sub ComboChange(sender As MyComboBox, e As Object) Handles ComboDownloadVersion.SelectionChanged, ComboModLocalNameStyle.SelectionChanged, ComboDownloadTranslate.SelectionChanged, ComboSystemUpdate.SelectionChanged, ComboSystemActivity.SelectionChanged, ComboDownloadMod.SelectionChanged
         If AniControlEnabled = 0 Then Setup.Set(sender.Tag, sender.SelectedIndex)
     End Sub
     Private Shared Sub TextBoxChange(sender As MyTextBox, e As Object) Handles TextSystemCache.ValidatedTextChanged
@@ -215,13 +189,43 @@
         End Try
     End Function
 
-#Region "导出 / 导入设置"
-
+#Region "导入/导出设置"
+    '导出设置
     Private Sub BtnSystemSettingExp_Click(sender As Object, e As MouseButtonEventArgs) Handles BtnSystemSettingExp.Click
-        Hint("该功能尚在开发中！")
+        Dim encodedExport As Boolean = False
+        Select Case MyMsgBox("是否需要导出账号密码、主题颜色等个人设置？" & vbCrLf &
+                             "如果确定，则应妥善保存该设置，避免被他人窃取。这部分设置仅对这台电脑有效。",
+                 Button1:="否", Button2:="是", Button3:="取消")
+            Case 1
+                encodedExport = False
+            Case 2
+                encodedExport = True
+            Case 3
+                Exit Sub
+        End Select
+        Dim savePath As String = SelectAs("选择保存位置", "PCL 全局配置.ini", "PCL 配置文件(*.ini)|*.ini", Path).Replace("/", "\")
+        If savePath = "" Then Exit Sub
+        If Setup.SetupExport(savePath, ExportEncoded:=encodedExport) Then
+            Hint("配置导出成功！", HintType.Finish)
+            OpenExplorer($"/select,""{savePath}""")
+        End If
     End Sub
+
+    '导入
     Private Sub BtnSystemSettingImp_Click(sender As Object, e As MouseButtonEventArgs) Handles BtnSystemSettingImp.Click
-        Hint("该功能尚在开发中！")
+        If MyMsgBox("导入设置后，现有的设置将会被覆盖，建议先导出现有设置。" & vbCrLf &
+                    "当前设置将会被备份到 PCL 文件夹下的 Setup.ini.old 文件，如有需要可以自行还原。" & vbCrLf &
+                    "是否继续？", Button1:="继续", Button2:="取消") = 1 Then
+            Dim sourcePath As String = SelectFile("PCL 配置文件(*.ini)|*.ini", "选择配置文件")
+            If sourcePath = "" Then Exit Sub
+            If Setup.SetupImport(sourcePath) Then
+                '把导入的设置 UI 化
+                If FrmSetupLaunch IsNot Nothing Then FrmSetupLaunch.Reload()
+                If FrmSetupUI IsNot Nothing Then FrmSetupUI.Reload()
+                If FrmSetupSystem IsNot Nothing Then FrmSetupSystem.Reload()
+                Hint("配置导入成功！", HintType.Finish)
+            End If
+        End If
     End Sub
 
 #End Region

@@ -403,8 +403,11 @@ EndHint:
     Public FrmDownloadForge As PageDownloadForge
     Public FrmDownloadNeoForge As PageDownloadNeoForge
     Public FrmDownloadFabric As PageDownloadFabric
+    Public FrmDownloadQuilt As PageDownloadQuilt
     Public FrmDownloadMod As PageDownloadMod
     Public FrmDownloadPack As PageDownloadPack
+    Public FrmDownloadResourcePack As PageDownloadResourcePack
+    Public FrmDownloadShader As PageDownloadShader
 
     '设置页面声明
     Public FrmSetupLeft As PageSetupLeft
@@ -433,7 +436,12 @@ EndHint:
     Public FrmVersionOverall As PageVersionOverall
     Public FrmVersionMod As PageVersionMod
     Public FrmVersionModDisabled As PageVersionModDisabled
+    Public FrmVersionScreenshot As PageVersionScreenshot
+    Public FrmVersionWorld As PageVersionWorld
+    Public FrmVersionShader As PageVersionShader
+    Public FrmVersionResourcePack As PageVersionResourcePack
     Public FrmVersionSetup As PageVersionSetup
+    Public FrmVersionExport As PageVersionExport
 
     '资源信息分页声明
     Public FrmDownloadCompDetail As PageDownloadCompDetail
@@ -443,6 +451,10 @@ EndHint:
 #Region "帮助"
 
     Public Class HelpEntry
+        ''' <summary>
+        ''' 原始信息路径。用于刷新。
+        ''' </summary>
+        Public RawPath As String
 
         '基础
 
@@ -501,6 +513,7 @@ EndHint:
         ''' 从文件初始化 HelpEntry 对象，失败会抛出异常。
         ''' </summary>
         Public Sub New(FilePath As String)
+            RawPath = FilePath
             Dim JsonData As JObject = GetJson(HelpArgumentReplace(ReadFile(FilePath)))
             If JsonData Is Nothing Then Throw New FileNotFoundException("未找到帮助文件：" & FilePath, FilePath)
             '加载常规信息
@@ -598,7 +611,7 @@ EndHint:
                                     '加载忽略列表
                                     Log("[Help] 发现 .helpignore 文件：" & File.FullName)
                                     For Each Line In ReadFile(File.FullName).Split(vbCrLf.ToCharArray)
-                                        Dim RealString As String = Line.Before("#").Trim
+                                        Dim RealString As String = Line.BeforeFirst("#").Trim
                                         If String.IsNullOrWhiteSpace(RealString) Then Continue For
                                         IgnoreList.Add(RealString)
                                         If ModeDebug Then Log("[Help]  > " & RealString)
@@ -611,7 +624,7 @@ EndHint:
                     Log("[Help] 已扫描 PCL 文件夹下的帮助文件，目前总计 " & FileList.Count & " 条")
                     '读取自带文件
                     For Each File In EnumerateFiles(PathTemp & "Help")
-                        '跳过非 json 文件与以 . 开头的文件夹
+                        '跳过非 Json 文件与以 . 开头的文件夹
                         If File.Extension.ToLower <> ".json" OrElse File.Directory.FullName.Replace(PathTemp & "Help", "").Contains("\.") Then Continue For
                         '检查忽略列表
                         Dim RealPath As String = File.FullName.Replace(PathTemp & "Help\", "")
